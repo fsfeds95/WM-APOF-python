@@ -3,55 +3,45 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Ruta "/poster"
-@app.route("/poster")
-def add_watermark_to_poster():
-    # Verificar si se proporcionó un enlace
-    if 'link' not in request.args:
-        return "¡Advertencia! No se proporcionó un enlace."
+@app.route('/backdrop')
+def backdrop():
+    image_url = request.args.get('image')
 
-    # Obtener la imagen desde el enlace
-    image_url = request.args['link']
-    image = Image.open(image_url)
+    if not image_url:
+        return '¡Ups! Parece que no has proporcionado un enlace de imagen.'
 
-    # Reescalar la imagen a 720px x 1280px
-    image = image.resize((720, 1280))
+    try:
+        image = Image.open(image_url)
+        scaled_image = image.resize((1280, 720))
+        watermark = Image.open('wm-backdeop.png')
+        watermark = watermark.resize((1280, 720))
+        watermark.putalpha(int(0.6 * 255))
+        scaled_image.paste(watermark, (0, 0), watermark)
+        scaled_image.save('WM-AstroPeliculasOf.jpg', 'JPEG', quality=100)
+        return send_file('WM-AstroPeliculasOf.jpg', mimetype='image/jpeg')
+    except Exception as e:
+        print(e)
+        return 'Ha ocurrido un error al procesar la imagen.'
 
-    # Agregar marca de agua
-    watermark = Image.open("wm-poster.png")
-    watermark = watermark.resize((720, 1280), Image.ANTIALIAS)
-    image.paste(watermark, (0, 0), watermark)
+@app.route('/poster')
+def poster():
+    image_url = request.args.get('image')
 
-    # Guardar la imagen resultante como JPEG con calidad al 100%
-    image.save("WM-AstroPeliculasOf.jpg", "JPEG", quality=100)
+    if not image_url:
+        return '¡Ups! Parece que no has proporcionado un enlace de imagen.'
 
-    # Mostrar la imagen en el navegador sin descarga automática
-    return send_file("WM-AstroPeliculasOf.jpg", mimetype='image/jpeg')
-
-# Ruta "/backdrop"
-@app.route("/backdrop")
-def add_watermark_to_backdrop():
-    # Verificar si se proporcionó un enlace
-    if 'link' not in request.args:
-        return "¡Advertencia! No se proporcionó un enlace."
-
-    # Obtener la imagen desde el enlace
-    image_url = request.args['link']
-    image = Image.open(image_url)
-
-    # Reescalar la imagen a 1280px x 720px
-    image = image.resize((1280, 720))
-
-    # Agregar marca de agua
-    watermark = Image.open("wm-backdrop.png")
-    watermark = watermark.resize((1280, 720), Image.ANTIALIAS)
-    image.paste(watermark, (0, 0), watermark)
-
-    # Guardar la imagen resultante como JPEG con calidad al 100%
-    image.save("WM-AstroPeliculasOf.jpg", "JPEG", quality=100)
-
-    # Mostrar la imagen en el navegador sin descarga automática
-    return send_file("WM-AstroPeliculasOf.jpg", mimetype='image/jpeg')
+    try:
+        image = Image.open(image_url)
+        scaled_image = image.resize((720, 1280))
+        watermark = Image.open('wm-poster.png')
+        watermark = watermark.resize((720, 1280))
+        watermark.putalpha(int(0.6 * 255))
+        scaled_image.paste(watermark, (0, 0), watermark)
+        scaled_image.save('WM-AstroPeliculasOf.jpg', 'JPEG', quality=100)
+        return send_file('WM-AstroPeliculasOf.jpg', mimetype='image/jpeg')
+    except Exception as e:
+        print(e)
+        return 'Ha ocurrido un error al procesar la imagen.'
 
 if __name__ == '__main__':
     app.run(port=8225)
