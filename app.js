@@ -27,7 +27,7 @@ app.get('/backdrop', async (req, res) => {
     res.send(watermarkedImage);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error al procesar la imagen');
+    res.status(500).send(`Error al procesar la imagen: ${error.message}`);
   }
 });
 
@@ -54,22 +54,31 @@ app.get('/poster', async (req, res) => {
     res.send(watermarkedImage);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error al procesar la imagen');
+    res.status(500).send(`Error al procesar la imagen: ${error.message}`);
   }
 });
 
 // Función para agregar marca de agua
-async function addWatermark(imageBuffer, watermarkFilename, width, height) {
-  const watermarkBuffer = await sharp(watermarkFilename)
-    .resize(width, height)
-    .toBuffer();
+async function addWatermark(image, watermarkPath, width, height) {
+  try {
+    // Cargar la marca de agua
+    const watermark = await jimp.read(watermarkPath);
 
-  return sharp(imageBuffer)
-    .composite([{ input: watermarkBuffer, gravity: 'southeast', opacity: 0.6 }])
-    .toBuffer();
+    console.log('Imagen original:', image); // Agregar este console.log para ver la imagen original
+    console.log('Marca de agua:', watermark); // Agregar este console.log para ver la marca de agua
+
+    // Procesar la imagen con la marca de agua
+    const processedImage = await jimp.read(image)
+      .resize(width, height)
+      .composite(watermark, 0, 0, {
+        mode: jimp.BLEND_SOURCE_OVER,
+        opacitySource: 0.5,
+      })
+      .getBufferAsync(jimp.MIME_JPEG);
+
+    return processedImage;
+  } catch (error) {
+    console.error('Error al agregar la marca de agua:', error);
+    throw error;
+  }
 }
-
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`La aplicación está escuchando en el puerto ${port}`);
-});
