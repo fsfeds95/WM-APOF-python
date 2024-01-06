@@ -20,7 +20,7 @@ app.get('/backdrop', async (req, res) => {
       .toBuffer();
 
     // Agregar marca de agua
-    const watermarkedImage = await addWatermark(scaledImage, 'wm-backdrop.png', 1280, 720);
+    const watermarkedImage = await addWatermark(scaledImage, 'Wtxt-backdrop.png', 1280, 720);
 
     // Enviar la imagen de salida como JPEG con calidad del 90%
     res.contentType('image/jpeg');
@@ -47,7 +47,7 @@ app.get('/poster', async (req, res) => {
       .toBuffer();
 
     // Agregar marca de agua
-    const watermarkedImage = await addWatermark(scaledImage, 'wm-poster.png', 720, 1280);
+    const watermarkedImage = await addWatermark(scaledImage, 'Wtxt-poster.png', 720, 1280);
 
     // Enviar la imagen de salida como JPEG con calidad del 90%
     res.contentType('image/jpeg');
