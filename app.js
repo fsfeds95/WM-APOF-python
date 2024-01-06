@@ -5,7 +5,7 @@ const app = express();
 const port = 8225;
 
 // Ruta "/backdrop"
-app.get('/backdrop', async (req, res) => {
+app.get('/b', async (req, res) => {
   const { image } = req.query;
 
   // Verificar si se proporcionó un enlace de imagen
@@ -32,7 +32,7 @@ app.get('/backdrop', async (req, res) => {
 });
 
 // Ruta "/poster"
-app.get('/poster', async (req, res) => {
+app.get('/p', async (req, res) => {
   const { image } = req.query;
 
   // Verificar si se proporcionó un enlace de imagen
