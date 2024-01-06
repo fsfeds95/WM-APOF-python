@@ -6,25 +6,25 @@ const port = 8225;
 
 // Ruta "/backdrop"
 app.get('/b', async (req, res) => {
-  const { img } = req.query;
+  const { image } = req.query;
 
   // Verificar si se proporcionó un enlace de imagen
-  if (!img) {
+  if (!image) {
     return res.send('Advertencia: No se proporcionó un enlace de imagen');
   }
 
   try {
     // Escalar la imagen a 1280x720
-    const scaledimg = await sharp(img)
+    const scaledimage = await sharp(image)
       .resize(1280, 720)
       .toBuffer();
 
     // Agregar marca de agua
-    const watermarkedimg = await addWatermark(scaledimg, 'Wtxt-backdrop.png', 1280, 720);
+    const watermarkedimage = await addWatermark(scaledimage, 'Wtxt-backdrop.png', 1280, 720);
 
     // Enviar la imagen de salida como JPEG con calidad del 90%
-    res.contentType('img/jpeg');
-    res.send(watermarkedimg);
+    res.contentType('image/jpeg');
+    res.send(watermarkedimage);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error al procesar la imagen');
@@ -33,25 +33,25 @@ app.get('/b', async (req, res) => {
 
 // Ruta "/poster"
 app.get('/p', async (req, res) => {
-  const { img } = req.query;
+  const { image } = req.query;
 
   // Verificar si se proporcionó un enlace de imagen
-  if (!img) {
+  if (!image) {
     return res.send('Advertencia: No se proporcionó un enlace de imagen');
   }
 
   try {
     // Escalar la imagen a 720x1280
-    const scaledimg = await sharp(img)
+    const scaledimage = await sharp(image)
       .resize(720, 1280)
       .toBuffer();
 
     // Agregar marca de agua
-    const watermarkedimg = await addWatermark(scaledimg, 'Wtxt-poster.png', 720, 1280);
+    const watermarkedimage = await addWatermark(scaledimage, 'Wtxt-poster.png', 720, 1280);
 
     // Enviar la imagen de salida como JPEG con calidad del 90%
-    res.contentType('img/jpeg');
-    res.send(watermarkedimg);
+    res.contentType('image/jpeg');
+    res.send(watermarkedimage);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error al procesar la imagen');
@@ -59,12 +59,12 @@ app.get('/p', async (req, res) => {
 });
 
 // Función para agregar marca de agua
-async function addWatermark(imgBuffer, watermarkFilename, width, height) {
+async function addWatermark(imageBuffer, watermarkFilename, width, height) {
   const watermarkBuffer = await sharp(watermarkFilename)
     .resize(width, height)
     .toBuffer();
 
-  return sharp(imgBuffer)
+  return sharp(imageBuffer)
     .composite([{ input: watermarkBuffer, gravity: 'southeast', opacity: 0.6 }])
     .toBuffer();
 }
